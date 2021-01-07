@@ -1,12 +1,9 @@
 package com.massivecraft.creativegates;
 
 import com.massivecraft.creativegates.entity.MConf;
-import com.massivecraft.creativegates.entity.UConf;
-import com.massivecraft.creativegates.entity.UConfColls;
 import com.massivecraft.creativegates.entity.UGate;
-import com.massivecraft.creativegates.entity.UGateColls;
+import com.massivecraft.creativegates.entity.UGateColl;
 import com.massivecraft.massivecore.Engine;
-import com.massivecraft.massivecore.MassiveCore;
 import com.massivecraft.massivecore.mixin.MixinMessage;
 import com.massivecraft.massivecore.ps.PS;
 import com.massivecraft.massivecore.util.IdUtil;
@@ -64,8 +61,7 @@ public class EngineMain extends Engine
 	
 	public static boolean isGateNearby(Block block)
 	{
-		UConf uconf = UConf.get(block);
-		if ( ! uconf.isEnabled()) return false;
+		if ( ! MConf.get().isEnabled()) return false;
 		
 		final int radius = 3;
 		for (int dx = -radius; dx <= radius; dx++)
@@ -92,7 +88,7 @@ public class EngineMain extends Engine
 	{
 		// If a portal block is running physics ...
 		Block block = event.getBlock();
-		if (block.getType() != Material.PORTAL) return;
+		if (block.getType() != Material.NETHER_PORTAL) return;
 		
 		// ... and we are filling or that block is stable according to our algorithm ...
 		if ( ! (CreativeGates.get().isFilling() || isPortalBlockStable(block))) return;
@@ -117,8 +113,7 @@ public class EngineMain extends Engine
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void stabilizePortalContent(BlockFromToEvent event)
 	{
-		UConf uconf = UConfColls.get().getForWorld(event.getBlock().getWorld().getName()).get(MassiveCore.INSTANCE);
-		if ( ! uconf.isUsingWater()) return;
+		if ( ! MConf.get().isUsingWater()) return;
 		if (UGate.get(event.getBlock()) == null && UGate.get(event.getToBlock()) == null) return;
 		event.setCancelled(true);
 	}
@@ -179,7 +174,7 @@ public class EngineMain extends Engine
 	public void noZombiePigmanPortalSpawn(CreatureSpawnEvent event)
 	{
 		// If a zombie pigman is spawning ...
-		if (event.getEntityType() != EntityType.PIG_ZOMBIE) return;
+		if (event.getEntityType() != EntityType.ZOMBIFIED_PIGLIN) return;
 		
 		// ... because of a nether portal ...
 		if (event.getSpawnReason() != SpawnReason.NETHER_PORTAL) return;
@@ -189,7 +184,7 @@ public class EngineMain extends Engine
 		if ( ! isGateNearby(location.getBlock())) return;
 		
 		// ... and we are blocking zombie pigman portal spawn ...
-		if (UConf.get(location).isPigmanPortalSpawnAllowed()) return;
+		if (MConf.get().isPigmanPortalSpawnAllowed()) return;
 		
 		// ... then block the spawn event.
 		event.setCancelled(true);
@@ -224,8 +219,7 @@ public class EngineMain extends Engine
 		}
 		
 		// ... and gates are enabled here ...
-		UConf uconf = UConf.get(event.getTo());
-		if ( ! uconf.isEnabled()) return;
+		if ( ! MConf.get().isEnabled()) return;
 		
 		// ... and we have permission to use gates ...
 		if ( ! Perm.USE.has(player, MConf.get().verboseUsePermission)) return;
@@ -337,8 +331,7 @@ public class EngineMain extends Engine
 		if (clickedBlock == null) return;
 		
 		// ... and gates are enabled here ...
-		UConf uconf = UConf.get(clickedBlock);
-		if ( ! uconf.isEnabled()) return;
+		if ( ! MConf.get().isEnabled()) return;
 		
 		// ... and the item in hand ...
 		final ItemStack currentItem = event.getItem();
@@ -348,13 +341,13 @@ public class EngineMain extends Engine
 		// ... is in any way an interesting material ...
 		if
 		(
-			material != uconf.getMaterialInspect()
+			material != MConf.get().getMaterialInspect()
 			&&
-			material != uconf.getMaterialMode()
+			material != MConf.get().getMaterialMode()
 			&&
-			material != uconf.getMaterialSecret()
+			material != MConf.get().getMaterialSecret()
 			&&
-			material != uconf.getMaterialCreate()
+			material != MConf.get().getMaterialCreate()
 		)
 		{
 			return;
@@ -366,7 +359,7 @@ public class EngineMain extends Engine
 		String message = null;
 		
 		// ... and if ...
-		if (material == uconf.getMaterialCreate())
+		if (material == MConf.get().getMaterialCreate())
 		{
 			// ... we are trying to create ...
 			
@@ -406,9 +399,9 @@ public class EngineMain extends Engine
 			
 			// ... ensure the required blocks are present ...
 			Map<Material, Integer> materialCounts = MaterialCountUtil.count(blocks);
-			if ( ! MaterialCountUtil.has(materialCounts, uconf.getBlocksrequired()))
+			if ( ! MaterialCountUtil.has(materialCounts, MConf.get().getBlocksrequired()))
 			{
-				message = Txt.parse("<b>The frame must contain %s<b>.", MaterialCountUtil.desc(uconf.getBlocksrequired()));
+				message = Txt.parse("<b>The frame must contain %s<b>.", MaterialCountUtil.desc(MConf.get().getBlocksrequired()));
 				MixinMessage.get().messageOne(player, message);
 				return;
 			}
@@ -426,7 +419,7 @@ public class EngineMain extends Engine
 			}
 			
 			// ... create the gate ...
-			UGate newGate = UGateColls.get().get(startBlock).create();
+			UGate newGate = UGateColl.get().create();
 			newGate.setCreatorId(IdUtil.getId(player));
 			newGate.setNetworkId(newNetworkId);
 			newGate.setExit(exit);
@@ -443,7 +436,7 @@ public class EngineMain extends Engine
 			MixinMessage.get().messageOne(player, message);
 			
 			// ... item cost ...
-			if (uconf.isRemovingCreateToolItem())
+			if (MConf.get().isRemovingCreateToolItem())
 			{
 				// ... remove one item amount...
 				
@@ -454,7 +447,7 @@ public class EngineMain extends Engine
 				message = Txt.parse("<i>The %s disappears.", Txt.getMaterialName(material));
 				MixinMessage.get().messageOne(player, message);
 			}
-			else if (uconf.isRemovingCreateToolName())
+			else if (MConf.get().isRemovingCreateToolName())
 			{
 				// ... just remove the item name ...
 				
@@ -504,7 +497,7 @@ public class EngineMain extends Engine
 			}
 			
 			// ... and we are not using water ...
-			if ( ! uconf.isUsingWater())
+			if ( ! MConf.get().isUsingWater())
 			{
 				// ... update the portal orientation
 				currentGate.fill();
@@ -530,7 +523,7 @@ public class EngineMain extends Engine
 				}
 			}
 			
-			if (material == uconf.getMaterialInspect())
+			if (material == MConf.get().getMaterialInspect())
 			{
 				// ... we are trying to inspect ...
 				message = Txt.parse("<i>Some gate inscriptions are revealed:");
@@ -542,7 +535,7 @@ public class EngineMain extends Engine
 				message = Txt.parse("<k>gates: <v>%d", currentGate.getGateChain().size());
 				MixinMessage.get().messageOne(player, message);
 			}
-			else if (material == uconf.getMaterialSecret())
+			else if (material == MConf.get().getMaterialSecret())
 			{
 				// ... we are trying to change secret state ...
 				
@@ -561,7 +554,7 @@ public class EngineMain extends Engine
 					MixinMessage.get().messageOne(player, message);
 				}
 			}
-			else if (material == uconf.getMaterialMode())
+			else if (material == MConf.get().getMaterialMode())
 			{
 				// ... we are trying to change mode ...
 				

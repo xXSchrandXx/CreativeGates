@@ -7,7 +7,6 @@ import org.bukkit.block.BlockFace;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 public enum GateOrientation

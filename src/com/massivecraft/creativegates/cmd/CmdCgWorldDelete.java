@@ -4,7 +4,6 @@ import com.massivecraft.creativegates.Perm;
 import com.massivecraft.creativegates.entity.MConf;
 import com.massivecraft.creativegates.entity.UGate;
 import com.massivecraft.creativegates.entity.UGateColl;
-import com.massivecraft.creativegates.entity.UGateColls;
 import com.massivecraft.massivecore.MassiveException;
 import com.massivecraft.massivecore.command.MassiveCommand;
 import com.massivecraft.massivecore.command.requirement.RequirementHasPerm;
@@ -45,15 +44,12 @@ public class CmdCgWorldDelete extends MassiveCommand
 		
 		// Apply
 		int countDeleted = 0;
-		for (UGateColl coll : UGateColls.get().getColls())
+		for (UGate gate : UGateColl.get().getAll())
 		{
-			for (UGate gate : coll.getAll())
+			if (world.equals(gate.getExit().getWorld()))
 			{
-				if (world.equals(gate.getExit().getWorld()))
-				{
-					gate.destroy();
-					countDeleted++;
-				}
+				gate.destroy();
+				countDeleted++;
 			}
 		}
 		

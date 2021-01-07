@@ -1,17 +1,13 @@
 package com.massivecraft.creativegates;
 
 import com.massivecraft.creativegates.cmd.CmdCg;
-import com.massivecraft.creativegates.cmd.type.TypePermissionDefault;
 import com.massivecraft.creativegates.entity.MConf;
 import com.massivecraft.creativegates.entity.MConfColl;
-import com.massivecraft.creativegates.entity.UConfColls;
-import com.massivecraft.creativegates.entity.UGateColls;
+import com.massivecraft.creativegates.entity.UGateColl;
 import com.massivecraft.creativegates.index.IndexCombined;
-import com.massivecraft.massivecore.Aspect;
-import com.massivecraft.massivecore.AspectColl;
 import com.massivecraft.massivecore.MassivePlugin;
-import com.massivecraft.massivecore.Multiverse;
 import com.massivecraft.massivecore.command.type.RegistryType;
+import com.massivecraft.massivecore.command.type.enumeration.TypePermissionDefault;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -34,16 +30,15 @@ public class CreativeGates extends MassivePlugin
 	
 	private static CreativeGates i;
 	public static CreativeGates get() { return i; }
-	public CreativeGates() { CreativeGates.i = this; }
+	public CreativeGates()
+	{
+		CreativeGates.i = this;
+		this.setVersionSynchronized(false);
+	}
 	
 	// -------------------------------------------- //
 	// FIELDS
 	// -------------------------------------------- //
-	
-	// Aspects
-	private Aspect aspect;
-	public Aspect getAspect() { return this.aspect; }
-	public Multiverse getMultiverse() { return this.getAspect().getMultiverse(); }
 	
 	// Index
 	private final IndexCombined index = new IndexCombined();
@@ -61,14 +56,6 @@ public class CreativeGates extends MassivePlugin
 	@Override
 	public void onEnableInner()
 	{
-		// Initialize Aspects
-		this.aspect = AspectColl.get().get(Const.ASPECT, true);
-		this.aspect.register();
-		this.aspect.setDesc(
-			"<i>What gates do exist.",
-			"<i>What the config options are set to."
-		);
-
 		// Index
 		this.getIndex().clear();
 		
@@ -79,8 +66,7 @@ public class CreativeGates extends MassivePlugin
 		this.activate(
 			// Coll
 			MConfColl.class,
-			UConfColls.class,
-			UGateColls.class,
+			UGateColl.class,
 		
 			// Engine
 			EngineMain.class,
@@ -91,13 +77,7 @@ public class CreativeGates extends MassivePlugin
 	
 		// Schedule a permission update.
 		// Possibly it will be useful due to the way Bukkit loads permissions.
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			@Override
-			public void run()
-			{
-				MConf.get().updatePerms();
-			}
-		});
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> MConf.get().updatePerms());
 	}
 	
 	@Override

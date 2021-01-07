@@ -1,6 +1,6 @@
 package com.massivecraft.creativegates;
 
-import com.massivecraft.creativegates.entity.UConf;
+import com.massivecraft.creativegates.entity.MConf;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
@@ -13,12 +13,12 @@ public class FloodUtil
 {
 	public static Entry<GateOrientation, Set<Block>> getGateFloodInfo(Block startBlock)
 	{
-		UConf uconf = UConf.get(startBlock);
+		MConf mconf = MConf.get();
 		
 		// Search for content WE and NS
 		GateOrientation gateOrientaion = null;
-		Set<Block> blocksNS = getFloodBlocks(startBlock, new HashSet<Block>(), GateOrientation.NS.expandFaces, uconf.getMaxarea());
-		Set<Block> blocksWE = getFloodBlocks(startBlock, new HashSet<Block>(), GateOrientation.WE.expandFaces, uconf.getMaxarea());
+		Set<Block> blocksNS = getFloodBlocks(startBlock, new HashSet<>(), GateOrientation.NS.expandFaces, mconf.getMaxarea());
+		Set<Block> blocksWE = getFloodBlocks(startBlock, new HashSet<>(), GateOrientation.WE.expandFaces, mconf.getMaxarea());
 		
 		// Figure out dir and content... or throw no frame fail. 
 		Set<Block> blocks;
@@ -91,9 +91,8 @@ public class FloodUtil
 	
 	public static Set<Block> expandedByOne(Set<Block> blocks, Set<BlockFace> expandFaces)
 	{
-		Set<Block> ret = new HashSet<>();
-		
-		ret.addAll(blocks);
+
+		Set<Block> ret = new HashSet<>(blocks);
 		
 		for (Block block : blocks)
 		{

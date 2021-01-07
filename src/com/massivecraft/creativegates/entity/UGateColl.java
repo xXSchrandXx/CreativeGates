@@ -3,25 +3,23 @@ package com.massivecraft.creativegates.entity;
 import com.massivecraft.creativegates.CreativeGates;
 import com.massivecraft.creativegates.ExitComparator;
 import com.massivecraft.creativegates.NetworkIdEqualsPredicate;
+import com.massivecraft.massivecore.collections.MassiveList;
 import com.massivecraft.massivecore.ps.PS;
 import com.massivecraft.massivecore.store.Coll;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UGateColl extends Coll<UGate>
 {
 	// -------------------------------------------- //
-	// CONSTRUCT
+	// INSTANCE & CONSTRUCT
 	// -------------------------------------------- //
-	
-	public UGateColl(String name)
-	{
-		super(name);
-	}
-	
+
+	private static UGateColl i = new UGateColl();
+	public static UGateColl get() { return i; }
+
 	// -------------------------------------------- //
 	// STACK TRACEABILITY
 	// -------------------------------------------- //
@@ -65,7 +63,7 @@ public class UGateColl extends Coll<UGate>
 	
 	public List<UGate> getGateChain(String networkId)
 	{
-		List<UGate> ret = new ArrayList<>();
+		List<UGate> ret = new MassiveList<>();
 		ret.addAll(this.getAll(new NetworkIdEqualsPredicate(networkId), ExitComparator.get()));
 		return ret;
 	}
