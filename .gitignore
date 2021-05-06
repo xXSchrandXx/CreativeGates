@@ -258,3 +258,6 @@ $RECYCLE.BIN/
 .dropbox
 .dropbox.attr
 .dropbox.cache
+
+### Internal Repo
+internalRepo/

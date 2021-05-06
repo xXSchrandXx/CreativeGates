@@ -15,11 +15,19 @@
             <artifactId>spigot-api</artifactId>
             <version>1.16.4-R0.1-SNAPSHOT</version>
         </dependency>
-        <!-- MassiveCore -->
+        <!-- MassiveCore
         <dependency>
             <groupId>com.massivecraft.massivecore</groupId>
             <artifactId>MassiveCore</artifactId>
             <version>2.14.2-SNAPSHOT</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>com.github.magnusulf</groupId>
+            <artifactId>MassiveCore3</artifactId>
+            <version>3.3.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/internalRepo/MassiveCore 3.3.2.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -80,7 +88,6 @@
 
     <!-- Build -->
     <build>
-        <sourceDirectory>src</sourceDirectory>
         <!-- Resources -->
         <resources>
             <!-- Standard -->
